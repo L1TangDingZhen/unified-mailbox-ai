@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# email-monitor installer
+# unified-mailbox-ai installer
 # Installs the skill into ~/.openclaw/workspace/skills/ and helps configure env vars + cron.
 
 set -e
 
-SKILL_NAME="email-monitor"
+SKILL_NAME="unified-mailbox-ai"
 SKILL_DIR="$HOME/.openclaw/workspace/skills/$SKILL_NAME"
 OPENCLAW_CONFIG="$HOME/.openclaw/openclaw.json"
-SCRIPT_PATH="$SKILL_DIR/scripts/email_monitor.py"
+SCRIPT_PATH="$SKILL_DIR/scripts/unified_mailbox_ai.py"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── Colors ──────────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@ error()   { echo -e "${RED}[✗]${NC} $*" >&2; }
 ask()     { read -r -p "$(echo -e "${YELLOW}[?]${NC} $1 ")" "$2"; }
 
 echo "============================================"
-echo "  email-monitor skill installer"
+echo "  unified-mailbox-ai skill installer"
 echo "============================================"
 echo
 
@@ -78,8 +78,8 @@ echo
 info "Installing skill files to $SKILL_DIR..."
 mkdir -p "$SKILL_DIR/scripts"
 cp "$SOURCE_DIR/SKILL.md" "$SKILL_DIR/SKILL.md"
-cp "$SOURCE_DIR/scripts/email_monitor.py" "$SKILL_DIR/scripts/email_monitor.py"
-chmod +x "$SKILL_DIR/scripts/email_monitor.py"
+cp "$SOURCE_DIR/scripts/unified_mailbox_ai.py" "$SKILL_DIR/scripts/unified_mailbox_ai.py"
+chmod +x "$SKILL_DIR/scripts/unified_mailbox_ai.py"
 success "Skill files installed"
 echo
 
@@ -151,7 +151,7 @@ ask "Also export these env vars in ~/.bashrc for terminal use? [Y/n]" add_bashrc
 if [[ ! "$add_bashrc" =~ ^[Nn]$ ]]; then
     {
         echo ""
-        echo "# email-monitor skill (added by installer)"
+        echo "# unified-mailbox-ai skill (added by installer)"
         echo "export EMAIL_MONITOR_TELEGRAM_USER=\"$TELEGRAM_USER\""
         if [ -n "$GMAIL_ACCOUNT" ]; then
             echo "export EMAIL_MONITOR_GMAIL_ACCOUNT=\"$GMAIL_ACCOUNT\""
@@ -163,7 +163,7 @@ fi
 echo
 
 # ── Step 7: Register skill in agent's skills list ───────────────────────
-ask "Register email-monitor in your main agent's skills list? [Y/n]" register
+ask "Register unified-mailbox-ai in your main agent's skills list? [Y/n]" register
 if [[ ! "$register" =~ ^[Nn]$ ]]; then
     python3 - "$OPENCLAW_CONFIG" <<'PYEOF'
 import json, sys
@@ -173,11 +173,11 @@ with open(config_path) as f:
 agents = config.get('agents', {}).get('list', [])
 for agent in agents:
     skills = agent.setdefault('skills', [])
-    if 'email-monitor' not in skills:
-        skills.append('email-monitor')
+    if 'unified-mailbox-ai' not in skills:
+        skills.append('unified-mailbox-ai')
 with open(config_path, 'w') as f:
     json.dump(config, f, indent=2)
-print('Registered email-monitor with all agents')
+print('Registered unified-mailbox-ai with all agents')
 PYEOF
     success "Skill registered"
 fi
@@ -192,10 +192,10 @@ if [[ ! "$setup_cron" =~ ^[Nn]$ ]]; then
         GMAIL_ENV="EMAIL_MONITOR_GMAIL_ACCOUNT=\"$GMAIL_ACCOUNT\""
         KEYRING_ENV="GOG_KEYRING_PASSWORD=\"\""
     fi
-    CRON_LINE="*/5 * * * * PATH=\$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin $KEYRING_ENV $GMAIL_ENV EMAIL_MONITOR_TELEGRAM_USER=\"$TELEGRAM_USER\" /usr/bin/python3 \$HOME/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py auto-notify"
+    CRON_LINE="*/5 * * * * PATH=\$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin $KEYRING_ENV $GMAIL_ENV EMAIL_MONITOR_TELEGRAM_USER=\"$TELEGRAM_USER\" /usr/bin/python3 \$HOME/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py auto-notify"
 
-    # Remove any prior email_monitor cron entries, then append the new one
-    (crontab -l 2>/dev/null | grep -v 'email_monitor'; echo "$CRON_LINE") | crontab -
+    # Remove any prior unified_mailbox_ai cron entries, then append the new one
+    (crontab -l 2>/dev/null | grep -v 'unified_mailbox_ai\|email_monitor'; echo "$CRON_LINE") | crontab -
     success "Cron job installed:"
     echo "    $CRON_LINE"
 fi

@@ -1,8 +1,10 @@
-# email-monitor
+# Unified Mailbox AI
 
 A unified unread-email monitor for **Outlook** and **Gmail**, built as an [OpenClaw](https://openclaw.ai) skill. Detects new mail across both providers, summarizes them with AI, checks calendar conflicts for meeting invitations, and pushes notifications to Telegram.
 
 Either Outlook or Gmail (or both) can be enabled — configure only what you need.
+
+> **clawhub slug**: `unified-mailbox-ai` &nbsp;·&nbsp; **GitHub**: [L1TangDingZhen/email-monitor](https://github.com/L1TangDingZhen/email-monitor)
 
 ---
 
@@ -25,7 +27,7 @@ Either Outlook or Gmail (or both) can be enabled — configure only what you nee
 - [OpenClaw](https://openclaw.ai) installed and a working Telegram bot pairing
 
 ### Required for Outlook support
-- The [`outlook-graph`](https://github.com/openclaw/outlook-graph) skill installed and authorized
+- The [`outlook-graph`](https://clawhub.ai/byungkyu/outlook-graph) skill installed and authorized
 - An MSAL token cache file at `~/.openclaw/ms_tokens.json` (the outlook-graph skill creates this)
 - Python package: `msal` (`pip install msal`)
 
@@ -38,17 +40,18 @@ Either Outlook or Gmail (or both) can be enabled — configure only what you nee
 
 ## Installation
 
-### 1. Install the skill files
+### Option A: Install from clawhub (recommended)
+
+```bash
+clawhub install unified-mailbox-ai
+```
+
+This drops the skill into `~/.openclaw/workspace/skills/unified-mailbox-ai/`. After installing, follow steps 2–4 below to configure env vars and (optionally) cron.
+
+### Option B: Install from GitHub
 
 ```bash
 git clone https://github.com/L1TangDingZhen/email-monitor.git
-mkdir -p ~/.openclaw/workspace/skills/email-monitor
-cp -r email-monitor/* ~/.openclaw/workspace/skills/email-monitor/
-```
-
-Or run the included installer:
-
-```bash
 cd email-monitor
 ./install.sh
 ```
@@ -57,7 +60,7 @@ The installer copies files into the right place, prompts for your environment va
 
 ### 2. Register the skill with your OpenClaw agent
 
-Edit `~/.openclaw/openclaw.json` and add `"email-monitor"` to your agent's `skills` list:
+Edit `~/.openclaw/openclaw.json` and add `"unified-mailbox-ai"` to your agent's `skills` list:
 
 ```json
 "agents": {
@@ -65,7 +68,7 @@ Edit `~/.openclaw/openclaw.json` and add `"email-monitor"` to your agent's `skil
     {
       "id": "main",
       "skills": [
-        "email-monitor",
+        "unified-mailbox-ai",
         ...
       ]
     }
@@ -120,7 +123,7 @@ crontab -e
 Add:
 
 ```
-*/5 * * * * PATH=$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin GOG_KEYRING_PASSWORD="" EMAIL_MONITOR_GMAIL_ACCOUNT="you@gmail.com" EMAIL_MONITOR_TELEGRAM_USER="123456789" /usr/bin/python3 $HOME/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py auto-notify
+*/5 * * * * PATH=$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin GOG_KEYRING_PASSWORD="" EMAIL_MONITOR_GMAIL_ACCOUNT="you@gmail.com" EMAIL_MONITOR_TELEGRAM_USER="123456789" /usr/bin/python3 $HOME/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py auto-notify
 ```
 
 Notes:
@@ -134,7 +137,7 @@ Notes:
 ### Check for new emails (manual)
 
 ```bash
-python3 ~/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py check
+python3 ~/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py check
 ```
 
 Outputs JSON with the unread emails from each enabled mailbox.
@@ -142,7 +145,7 @@ Outputs JSON with the unread emails from each enabled mailbox.
 ### Run the full auto-notify flow
 
 ```bash
-python3 ~/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py auto-notify
+python3 ~/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py auto-notify
 ```
 
 This is the action the cron job runs:
@@ -154,7 +157,7 @@ This is the action the cron job runs:
 ### Mark a specific email as notified
 
 ```bash
-python3 ~/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py mark --id "<EMAIL_ID>"
+python3 ~/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py mark --id "<EMAIL_ID>"
 ```
 
 For Gmail thread IDs, prefix with `gmail:` (e.g. `gmail:19cef361ab2acc22`).
@@ -162,7 +165,7 @@ For Gmail thread IDs, prefix with `gmail:` (e.g. `gmail:19cef361ab2acc22`).
 ### Clear all notification records
 
 ```bash
-python3 ~/.openclaw/workspace/skills/email-monitor/scripts/email_monitor.py clear
+python3 ~/.openclaw/workspace/skills/unified-mailbox-ai/scripts/unified_mailbox_ai.py clear
 ```
 
 Use this if you want to re-trigger notifications for previously seen emails.
@@ -221,5 +224,5 @@ MIT
 
 Built on top of:
 - [OpenClaw](https://openclaw.ai) — the agent framework
-- [`outlook-graph`](https://github.com/openclaw/outlook-graph) — Microsoft Graph integration
+- [`outlook-graph`](https://clawhub.ai/byungkyu/outlook-graph) — Microsoft Graph integration
 - [`gog`](https://gogcli.sh) — Google Workspace CLI
